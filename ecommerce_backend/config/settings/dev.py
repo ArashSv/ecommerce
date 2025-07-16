@@ -10,3 +10,8 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# celery development settings
+INSTALLED_APPS += ["django_celery_results"]
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "django-db"
