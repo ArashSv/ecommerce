@@ -5,3 +5,5 @@ djangorestframework-simplejwt[crypto]==5.5.0
 requests==2.32.4
 celery[redis]==5.5.3
 django-celery-results==2.6.0
+django-environ~=0.12.0
+redis~=5.2.1

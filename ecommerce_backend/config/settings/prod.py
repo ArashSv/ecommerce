@@ -8,6 +8,8 @@ env = environ.Env(
     DEBUG=(bool, False),
     DJANGO_ALLOWED_HOSTS=(list, []),
     POSTGRES_PORT=(int, 5432),
+    REDIS_PORT=(int, 6379),
+    REDIS_DB=(int, 0),
 )
 
 # -------------------------------------------------------------
@@ -36,3 +38,11 @@ DATABASES = {
 # -------------------------------------------------------------
 CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND")
+
+# -------------------------------------------------------------
+# REDIS
+# -------------------------------------------------------------
+REDIS_HOST = env("REDIS_HOST")
+REDIS_PORT = env.int("REDIS_PORT")
+REDIS_DB = env.int("REDIS_DB")
+REDIS_PASSWORD = env("REDIS_PASSWORD")
