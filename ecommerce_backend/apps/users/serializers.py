@@ -1,6 +1,6 @@
 import re
 from rest_framework import serializers
-from .models import Address
+from .models import Address, Profile
 
 IRAN_MOBILE_REGEX = r"^(\+98|0)?9\d{9}$"
 
@@ -50,6 +50,21 @@ class AddressSerializer(serializers.ModelSerializer):
             'latitude',
             'longitude',
             'is_default',
+            'created_at',
+            'updated_at',
+        ]
+        read_only_fields = ['created_at', 'updated_at']
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = [
+            'first_name',
+            'last_name',
+            'avatar',
+            'gender',
+            'birth_date',
+            'bio',
             'created_at',
             'updated_at',
         ]
