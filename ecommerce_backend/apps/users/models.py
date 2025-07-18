@@ -37,3 +37,30 @@ class User(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_superuser
+
+
+class Address(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses')
+    title = models.CharField(max_length=100, blank=True)
+
+    province = models.CharField(max_length=64)
+    city = models.CharField(max_length=64)
+
+    postal_address = models.TextField()
+    postal_code = models.IntegerField()
+    plaque = models.IntegerField()
+    unit = models.CharField(max_length=4, null=True, blank=True) #exam : 30B, 2A, ..
+
+    # Geolocation coordinates of the address
+    latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+
+    is_default = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.title}: {self.plaque} - {self.postal_address}"
+
+    class Meta:
+        ordering = ['-is_default', '-updated_at']
