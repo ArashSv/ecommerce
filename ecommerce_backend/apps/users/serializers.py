@@ -1,5 +1,6 @@
 import re
 from rest_framework import serializers
+from .models import Address
 
 IRAN_MOBILE_REGEX = r"^(\+98|0)?9\d{9}$"
 
@@ -33,3 +34,23 @@ class VerifyOtpSerializer(serializers.Serializer):
         if not re.fullmatch(r'\d{6}', value):
             raise serializers.ValidationError("code must be a 6‑digit number")
         return value
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = [
+            'title',
+            'province',
+            'city',
+            'postal_address',
+            'postal_code',
+            'plaque',
+            'unit',
+            'latitude',
+            'longitude',
+            'is_default',
+            'created_at',
+            'updated_at',
+        ]
+        read_only_fields = ['created_at', 'updated_at']
