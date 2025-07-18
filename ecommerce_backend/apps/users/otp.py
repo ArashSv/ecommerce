@@ -9,3 +9,13 @@ def send_otp(mobile_number):
     code = generate_otp_code()
     send_otp_sms_task.apply_async(args=(mobile_number, code))
     redis_client.set(f"otp:{mobile_number}", code, ex=240)
+
+def verify_otp(mobile_number, input_code):
+    key = f"otp:{mobile_number}"
+    stored = redis_client.get(key)
+    if stored is None:
+        return False
+    if str(stored) == str(input_code):
+        redis_client.delete(key)
+        return True
+    return False
