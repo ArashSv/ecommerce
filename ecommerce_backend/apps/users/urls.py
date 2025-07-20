@@ -1,8 +1,16 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import SendOTPView, VerifyOTPView, ProfileViewSet
 
-from .views import SendOTPView, VerifyOTPView
+router = DefaultRouter()
+router.register(r'profiles', ProfileViewSet, basename='profile')
 
 urlpatterns = [
     path('auth/send-otp/', SendOTPView.as_view(), name='send-otp'),
-    path('auth/verify-otp/', VerifyOTPView.as_view(), 'verify-orp'),
+    path('auth/verify-otp/', VerifyOTPView.as_view(), name='verify-otp'),
 ]
+
+urlpatterns += [
+    path('', include(router.urls), name='profile'),
+]
+
