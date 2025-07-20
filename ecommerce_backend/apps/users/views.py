@@ -2,8 +2,8 @@ from rest_framework import status, viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User, Profile
-from .serializers import SendOtpSerializer, VerifyOtpSerializer, ProfileSerializer
+from .models import User, Profile, Address
+from .serializers import SendOtpSerializer, VerifyOtpSerializer, ProfileSerializer, AddressSerializer
 from .perms import IsOwner
 from .otp import send_otp, verify_otp
 
@@ -25,6 +25,7 @@ class SendOTPView(APIView):
             return Response('OTP is being sent.', status=status.HTTP_202_ACCEPTED)
         return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class VerifyOTPView(APIView):
     def post(self, request):
         ser = VerifyOtpSerializer(data=request.data)
@@ -45,12 +46,24 @@ class VerifyOTPView(APIView):
                 "tokens": get_tokens_for_user(user)
             }, status=200)
 
+
 class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwner]
 
     def get_queryset(self):
         return Profile.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class AddressViewSet(viewsets.ModelViewSet):
+    serializer_class = AddressSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
+
+    def get_queryset(self):
+        return Address.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
