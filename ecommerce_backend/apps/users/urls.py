@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import TokenRefreshSlidingView
 from .views import SendOTPView, VerifyOTPView, MyProfileView, AddressViewSet
 
 router = DefaultRouter()
-router.register(r'my_profile', MyProfileView, basename='profile')
+# router.register(r'my_profile', MyProfileView, basename='profile')
 router.register(r'addresses', AddressViewSet, basename='address')
 
 urlpatterns = [
