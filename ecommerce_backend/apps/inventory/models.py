@@ -28,3 +28,13 @@ class Warehouse(BaseModel):
         return self.name
 
 
+class StockRecord(BaseModel):
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, related_name='stockrecords')
+    product_variant = models.ForeignKey('products.ProductVariant', on_delete=models.CASCADE, related_name='stockrecords')
+    sku = models.CharField(max_length=64, null=True, blank=True)
+    quantity = models.PositiveIntegerField()
+    buy_price = models.PositiveBigIntegerField(null=True, blank=True)
+    sales_price = models.PositiveBigIntegerField()
+
+    def __str__(self):
+        return f"{self.warehouse} : {self.product_variant}({self.quantity})"
