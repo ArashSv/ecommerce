@@ -1,4 +1,7 @@
 from django.contrib import admin
-from .models import Image
+from .models import ProductType
 
-admin.site.register(Image)
+
+@admin.register(ProductType)
+class ProductTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', )
