@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ProductType, Attribute, AttributeValue
+from .models import Product, ProductType, Attribute, AttributeValue
 
 admin.site.register(AttributeValue)
 
@@ -24,3 +24,8 @@ class AttributeValueInline(admin.TabularInline):
 class AttributeAdmin(admin.ModelAdmin):
     list_display = ('name', 'product_type')
     inlines = [AttributeValueInline]
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'product_type')
