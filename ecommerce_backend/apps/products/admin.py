@@ -1,6 +1,9 @@
 from django.contrib import admin
+from treebeard.forms import movenodeform_factory
+from treebeard.admin import TreeAdmin
 from .models import Product, ProductType, Attribute, AttributeValue, ProductAttributeValue, Image, ProductImage, \
-    Option, OptionValue, ProductVariant, VariantOptionValue
+    Option, OptionValue, ProductVariant, VariantOptionValue, Category
+
 
 admin.site.register(AttributeValue)
 admin.site.register(ProductAttributeValue)
@@ -74,3 +77,9 @@ class ProductVariantAdmin(admin.ModelAdmin):
     list_display = ('product',)
     inlines = [VariantOptionValueInline]
 
+
+class CategoryAdmin(TreeAdmin):
+    form = movenodeform_factory(Category)
+
+
+admin.site.register(Category, CategoryAdmin)

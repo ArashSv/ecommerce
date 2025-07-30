@@ -3,6 +3,7 @@ from datetime import datetime
 import hashlib
 from PIL import Image as PILImage
 from django.db import models
+from treebeard.mp_tree import MP_Node
 
 
 class BaseModel(models.Model):
@@ -61,6 +62,20 @@ class Image(BaseModel):
         super().save(*args, **kwargs)
 
 
+class Category(BaseModel, MP_Node):
+    name = models.CharField(max_length=128)
+    slug = models.SlugField(unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    node_order_by = ['name']
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "Categories"
+
+
 class Product(BaseModel):
     product_type = models.ForeignKey(
         ProductType, on_delete=models.PROTECT, related_name='products'
@@ -70,6 +85,8 @@ class Product(BaseModel):
     images = models.ManyToManyField(
         Image, through='ProductImage', related_name='products'
     )
+    categories = models.ManyToManyField(Category, related_name='categories')
+
 
     class Meta:
         ordering = ['name']
@@ -182,7 +199,7 @@ class ProductVariant(BaseModel):
         return f"{self.product.name}"
 
     def available_quantity(self):
-        ...
+        return self.stockrecords.quantity
 
 
 class VariantOptionValue(BaseModel):
