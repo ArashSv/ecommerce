@@ -1,12 +1,13 @@
 from django.contrib import admin
 from .models import Product, ProductType, Attribute, AttributeValue, ProductAttributeValue, Image, ProductImage, \
-    Option, OptionValue
+    Option, OptionValue, ProductVariant, VariantOptionValue
 
 admin.site.register(AttributeValue)
-admin.site.register(OptionValue)
 admin.site.register(ProductAttributeValue)
+admin.site.register(OptionValue)
 admin.site.register(Image)
 admin.site.register(ProductImage)
+admin.site.register(VariantOptionValue)
 
 
 class AttributeInline(admin.TabularInline):
@@ -61,3 +62,15 @@ class OptionValueInline(admin.TabularInline):
 class OptionAdmin(admin.ModelAdmin):
     list_display = ('name', 'product_type')
     inlines = [OptionValueInline]
+
+
+class VariantOptionValueInline(admin.TabularInline):
+    model = VariantOptionValue
+    extra = 2
+
+
+@admin.register(ProductVariant)
+class ProductVariantAdmin(admin.ModelAdmin):
+    list_display = ('product',)
+    inlines = [VariantOptionValueInline]
+
