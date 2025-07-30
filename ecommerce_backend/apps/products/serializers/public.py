@@ -31,3 +31,13 @@ class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
         fields = ('order', 'alt_text', 'image')
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    product_images = ProductImageSerializer(many=True)
+
+    class Meta:
+        model = Product
+        fields = ('id', 'name', 'product_images')
+
+
