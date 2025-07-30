@@ -1,6 +1,5 @@
 from rest_framework import serializers
-
-from ecommerce_backend.apps.products.models import Category
+from apps.products.models import Category, Image, ProductImage, Product
 
 
 class CategoryTreeSerializer(serializers.ModelSerializer):
@@ -18,3 +17,17 @@ class CategoryNodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = '__all__'
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Image
+        fields = ('id', 'file', 'width', 'height')
+
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    image = ImageSerializer()
+
+    class Meta:
+        model = ProductImage
+        fields = ('order', 'alt_text', 'image')
