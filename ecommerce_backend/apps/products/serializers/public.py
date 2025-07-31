@@ -99,3 +99,24 @@ class ProductAttributeValueSerializer(serializers.ModelSerializer):
         model = ProductAttributeValue
         fields = ('attribute', 'selected_value')
         read_only_fields = fields
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    categories = CategoryTreeSerializer(many=True, read_only=True)
+    attribute_values = ProductAttributeValueSerializer(many=True, read_only=True)
+    variants = ProductVariantSerializer(many=True, read_only=True)
+    product_images = ProductImageSerializer(many=True, read_only=True)
+
+
+    class Meta:
+        model = Product
+        fields = (
+            'id',
+            'name',
+            'categories',
+            'description',
+            'attribute_values',
+            'variants',
+            'product_images'
+        )
+        read_only_fields = fields
