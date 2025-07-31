@@ -1,10 +1,11 @@
 from rest_framework import serializers
-from rest_framework import serializers
 from apps.products.models import (
     Image, ProductImage, Product,
     Category, Option, OptionValue,
-    ProductVariant, VariantOptionValue
+    ProductVariant, VariantOptionValue,
+    Attribute, AttributeValue, ProductAttributeValue
 )
+
 
 
 class CategoryTreeSerializer(serializers.ModelSerializer):
@@ -70,4 +71,30 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVariant
         fields = ('id', 'option_values')
+        read_only_fields = fields
+
+
+class AttributeValueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AttributeValue
+        fields = ('id', 'value')
+        read_only_fields = fields
+
+
+class AttributeSerializer(serializers.ModelSerializer):
+    values = AttributeValueSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Attribute
+        fields = ('id', 'name', 'values')
+        read_only_fields = fields
+
+
+class ProductAttributeValueSerializer(serializers.ModelSerializer):
+    attribute = AttributeSerializer(read_only=True)
+    value = AttributeValueSerializer(read_only=True)
+
+    class Meta:
+        model = ProductAttributeValue
+        fields = ('attribute', 'value')
         read_only_fields = fields
