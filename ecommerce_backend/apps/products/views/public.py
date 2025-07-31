@@ -1,0 +1,19 @@
+from rest_framework import viewsets
+from apps.products.models import Product, Category
+from apps.products.serializers.public import ProductSerializer, CategoryTreeSerializer, CategoryNodeSerializer
+
+
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    def get_queryset(self):
+        if self.action == 'list':
+            return Category.objects.filter(depth=1)
+        else:
+            return Category.objects.all()
+
+    def get_serializer_class(self):
+        match self.action:
+            case 'list':
+                return CategoryTreeSerializer
+            case 'retrieve':
+                return CategoryNodeSerializer
+        return None
