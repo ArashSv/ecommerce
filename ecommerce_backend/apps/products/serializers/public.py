@@ -53,3 +53,21 @@ class OptionSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'values')
         read_only_fields = fields
 
+
+class VariantOptionValueSerializer(serializers.ModelSerializer):
+    option = OptionSerializer(read_only=True)
+    selected_value = OptionValueSerializer(source='value',read_only=True)
+
+    class Meta:
+        model = VariantOptionValue
+        fields = ('option', 'selected_value')
+        read_only_fields = fields
+
+
+class ProductVariantSerializer(serializers.ModelSerializer):
+    option_values = VariantOptionValueSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = ProductVariant
+        fields = ('id', 'option_values')
+        read_only_fields = fields
