@@ -92,9 +92,10 @@ class AttributeSerializer(serializers.ModelSerializer):
 
 class ProductAttributeValueSerializer(serializers.ModelSerializer):
     attribute = AttributeSerializer(read_only=True)
-    value = AttributeValueSerializer(read_only=True)
+    selected_value = AttributeValueSerializer(source='value', read_only=True)
+
 
     class Meta:
         model = ProductAttributeValue
-        fields = ('attribute', 'value')
+        fields = ('attribute', 'selected_value')
         read_only_fields = fields
