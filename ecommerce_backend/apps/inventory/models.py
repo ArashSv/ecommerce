@@ -33,8 +33,14 @@ class StockRecord(BaseModel):
     product_variant = models.ForeignKey('products.ProductVariant', on_delete=models.CASCADE, related_name='stockrecords')
     sku = models.CharField(max_length=64, null=True, blank=True)
     quantity = models.PositiveIntegerField()
+    reserved_quantity = models.PositiveIntegerField()
+    reorder_threshold = models.PositiveIntegerField(null=True, blank=True)
     buy_price = models.PositiveBigIntegerField(null=True, blank=True)
     sales_price = models.PositiveBigIntegerField()
 
+    @property
+    def available_quantity(self):
+        return max(self.quantity - self.reserved_quantity, 0)
+
     def __str__(self):
-        return f"{self.warehouse} : {self.product_variant}({self.quantity})"
+        return f"{self.warehouse} : {self.product_variant}({self.available_quantity})"
