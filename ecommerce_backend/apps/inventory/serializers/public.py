@@ -15,4 +15,5 @@ class StockRecordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StockRecord
-        fields = ('id','warehouse','product_variant','quantity', 'sales_price')
+        fields = ('id', 'warehouse', 'product_variant', 'available_quantity', 'sales_price')
+        read_only_fields = fields
