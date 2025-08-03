@@ -97,6 +97,7 @@ class Product(BaseModel):
     def main_variant(self):
         return self.default_variant or self.variants.order_by('price').first()
 
+
     class Meta:
         ordering = ['name']
 
@@ -203,6 +204,12 @@ class ProductVariant(BaseModel):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name='variants'
     )
+
+    @property
+    def is_available(self):
+        return self.stockrecords.filter(
+            quantity__gt=F('reserved_quantity')
+        ).exists()
 
     def __str__(self):
         return f"{self.product.name}"
