@@ -83,6 +83,9 @@ class Product(BaseModel):
     )
     default_variant = models.ForeignKey('ProductVariant', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
     name = models.CharField(max_length=128)
+    slug = models.SlugField(unique=True, allow_unicode=True)
+    meta_title = models.CharField(max_length=128, null=True, blank=True)
+    meta_description = models.TextField(null=True, blank=True)
     description = models.TextField()
     images = models.ManyToManyField(
         Image, through='ProductImage', related_name='products'
