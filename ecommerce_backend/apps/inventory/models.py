@@ -44,3 +44,8 @@ class StockRecord(BaseModel):
 
     def __str__(self):
         return f"{self.warehouse} : {self.product_variant}({self.available_quantity})"
+
+
+    class Meta:
+        unique_together = (('warehouse', 'product_variant'),)
+
