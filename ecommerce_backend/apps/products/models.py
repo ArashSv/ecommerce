@@ -81,6 +81,7 @@ class Product(BaseModel):
     product_type = models.ForeignKey(
         ProductType, on_delete=models.PROTECT, related_name='products'
     )
+    default_variant = models.ForeignKey('ProductVariant', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
     name = models.CharField(max_length=128)
     description = models.TextField()
     images = models.ManyToManyField(
@@ -91,6 +92,10 @@ class Product(BaseModel):
     @property
     def main_image(self):
         return self.images.first() # or default image
+
+    @property
+    def main_variant(self):
+        return self.default_variant or self.variants.order_by('price').first()
 
     class Meta:
         ordering = ['name']
