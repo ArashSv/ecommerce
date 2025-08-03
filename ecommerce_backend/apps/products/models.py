@@ -3,6 +3,7 @@ from datetime import datetime
 import hashlib
 from PIL import Image as PILImage
 from django.db import models
+from django.db.models import F
 from treebeard.mp_tree import MP_Node
 
 
@@ -87,6 +88,9 @@ class Product(BaseModel):
     )
     categories = models.ManyToManyField(Category, related_name='categories')
 
+    @property
+    def main_image(self):
+        return self.images.first() # or default image
 
     class Meta:
         ordering = ['name']
@@ -197,9 +201,6 @@ class ProductVariant(BaseModel):
 
     def __str__(self):
         return f"{self.product.name}"
-
-    def available_quantity(self):
-        return self.stockrecords.quantity
 
 
 class VariantOptionValue(BaseModel):
