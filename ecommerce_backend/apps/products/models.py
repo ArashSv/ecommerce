@@ -90,7 +90,7 @@ class Product(BaseModel):
     images = models.ManyToManyField(
         Image, through='ProductImage', related_name='products'
     )
-    categories = models.ManyToManyField(Category, related_name='categories')
+    categories = models.ManyToManyField(Category, related_name='products')
 
     @property
     def main_image(self):
