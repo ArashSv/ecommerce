@@ -87,14 +87,11 @@ class Product(BaseModel):
     meta_title = models.CharField(max_length=128, null=True, blank=True)
     meta_description = models.TextField(null=True, blank=True)
     description = models.TextField()
-    images = models.ManyToManyField(
-        Image, through='ProductImage', related_name='products'
-    )
     categories = models.ManyToManyField(Category, related_name='products')
 
     @property
     def main_image(self):
-        return self.images.first() # or default image
+        return self.product_images.first() # or default image
 
     @property
     def main_variant(self):
