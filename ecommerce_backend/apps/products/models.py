@@ -206,10 +206,15 @@ class ProductVariant(BaseModel):
     )
 
     @property
+    def total_available_quantity(self):
+        result = self.stockrecords.aggregate(
+            total=Sum(F('quantity') - F('reserved_quantity'))
+        )
+        return result['total'] or 0
+
+    @property
     def is_available(self):
-        return self.stockrecords.filter(
-            quantity__gt=F('reserved_quantity')
-        ).exists()
+        return self.total_available_quantity > 0
 
     def __str__(self):
         return f"{self.product.name}"
