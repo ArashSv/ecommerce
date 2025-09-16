@@ -95,7 +95,19 @@ class Product(BaseModel):
 
     @property
     def main_variant(self):
-        return self.default_variant or self.variants.order_by('price').first()
+        if self.default_variant:
+            return self.default_variant
+
+        available_variants = (
+            self.variants
+            .filter(stockrecords__quantity__gt=F('stockrecords__reserved_quantity'))
+            .distinct()
+        )
+
+        if available_variants.exists():
+            return available_variants.first()
+
+        return self.variants.first()
 
 
     class Meta:
