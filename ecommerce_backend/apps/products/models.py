@@ -82,6 +82,7 @@ class Product(BaseModel):
         ProductType, on_delete=models.PROTECT, related_name='products'
     )
     default_variant = models.ForeignKey('ProductVariant', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
+    default_image = models.ForeignKey('ProductImage', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
     name = models.CharField(max_length=128)
     slug = models.SlugField(unique=True, allow_unicode=True)
     meta_title = models.CharField(max_length=128, null=True, blank=True)
@@ -91,7 +92,7 @@ class Product(BaseModel):
 
     @property
     def main_image(self):
-        return self.product_images.first() # or default image
+        return self.default_image or self.product_images.first()
 
     @property
     def main_variant(self):
