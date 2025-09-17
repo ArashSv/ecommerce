@@ -102,7 +102,7 @@ class ProductAttributeValueSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    categories = CategoryTreeSerializer(many=True, read_only=True)
+    category = CategoryTreeSerializer(many=True, read_only=True)
     attribute_values = ProductAttributeValueSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
     product_images = ProductImageSerializer(many=True, read_only=True)
@@ -113,7 +113,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
-            'categories',
+            'category',
             'description',
             'attribute_values',
             'variants',

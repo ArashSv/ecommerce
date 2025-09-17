@@ -88,7 +88,7 @@ class Product(BaseModel):
     meta_title = models.CharField(max_length=128, null=True, blank=True)
     meta_description = models.TextField(null=True, blank=True)
     description = models.TextField()
-    categories = models.ManyToManyField(Category, related_name='products')
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
 
     @property
     def main_image(self):
