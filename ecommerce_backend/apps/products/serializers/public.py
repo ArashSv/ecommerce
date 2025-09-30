@@ -107,6 +107,15 @@ class ProductSerializer(serializers.ModelSerializer):
     variants = ProductVariantSerializer(many=True, read_only=True)
     product_images = ProductImageSerializer(many=True, read_only=True)
 
+    main_image = serializers.SerializerMethodField()
+    main_variant = serializers.SerializerMethodField()
+
+    def get_main_image(self, obj):
+        return obj.main_image
+
+    def get_main_variant(self, obj):
+        return obj.main_variant
+
 
     class Meta:
         model = Product
@@ -117,6 +126,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'description',
             'attribute_values',
             'variants',
-            'product_images'
+            'product_images',
+            'main_image',
+            'main_variant',
         )
         read_only_fields = fields
