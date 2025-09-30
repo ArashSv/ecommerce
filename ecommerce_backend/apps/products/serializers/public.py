@@ -39,6 +39,12 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ('order', 'alt_text', 'image')
 
 
+class MainImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = ('id',)
+
+
 class OptionValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = OptionValue
@@ -72,6 +78,12 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         model = ProductVariant
         fields = ('id', 'option_values')
         read_only_fields = fields
+
+
+class MainVariantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductVariant
+        fields = ('id',)
 
 
 class AttributeValueSerializer(serializers.ModelSerializer):
