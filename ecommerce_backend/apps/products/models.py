@@ -3,7 +3,7 @@ from datetime import datetime
 import hashlib
 from PIL import Image as PILImage
 from django.db import models
-from django.db.models import F
+from django.db.models import F, Sum
 from treebeard.mp_tree import MP_Node
 
 
