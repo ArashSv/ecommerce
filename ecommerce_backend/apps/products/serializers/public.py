@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from apps.inventory.serializers.public import StockRecordSerializer
 from apps.products.models import (
     Image, ProductImage, Product,
     Category, Option, OptionValue,
@@ -73,10 +75,15 @@ class VariantOptionValueSerializer(serializers.ModelSerializer):
 
 class ProductVariantSerializer(serializers.ModelSerializer):
     option_values = VariantOptionValueSerializer(many=True, read_only=True)
+    stockrecords = StockRecordSerializer(many=True, read_only=True)
+    total_available_quantity = serializers.SerializerMethodField()
+
+    def get_total_available_quantity(self, obj):
+        return obj.total_available_quantity
 
     class Meta:
         model = ProductVariant
-        fields = ('id', 'option_values')
+        fields = ('id', 'option_values', 'stockrecords', 'is_available', 'total_available_quantity')
         read_only_fields = fields
 
 
