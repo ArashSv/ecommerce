@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'treebeard',
+    'taggit',
+    'taggit_serializer',
 
     # Local apps
     'apps.cart',
