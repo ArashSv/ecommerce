@@ -31,7 +31,6 @@ class Warehouse(BaseModel):
 class StockRecord(BaseModel):
     warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, related_name='stockrecords')
     product_variant = models.ForeignKey('products.ProductVariant', on_delete=models.CASCADE, related_name='stockrecords')
-    sku = models.CharField(max_length=64, null=True, blank=True)
     quantity = models.PositiveIntegerField()
     reserved_quantity = models.PositiveIntegerField()
     reorder_threshold = models.PositiveIntegerField(null=True, blank=True)

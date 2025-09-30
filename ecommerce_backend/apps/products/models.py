@@ -114,6 +114,7 @@ class Product(BaseModel):
     class Meta:
         ordering = ['name']
 
+
     def __str__(self):
         return self.name
 
@@ -217,6 +218,7 @@ class ProductVariant(BaseModel):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name='variants'
     )
+    sku = models.CharField(max_length=64, null=True, blank=True)
 
     @property
     def total_available_quantity(self):
