@@ -74,7 +74,7 @@ class VariantOptionValueSerializer(ReadOnlyModelSerializer):
 
     class Meta:
         model = VariantOptionValue
-        fields = ('option', 'selected_value')
+        fields = ('id', 'option', 'selected_value')
 
 
 class ProductVariantSerializer(ReadOnlyModelSerializer):
@@ -117,7 +117,7 @@ class ProductAttributeValueSerializer(ReadOnlyModelSerializer):
 
     class Meta:
         model = ProductAttributeValue
-        fields = ('attribute', 'selected_value')
+        fields = ('id', 'attribute', 'selected_value')
 
 class ProductSerializer(ReadOnlyModelSerializer):
     category = CategoryTreeSerializer(many=True, read_only=True)
