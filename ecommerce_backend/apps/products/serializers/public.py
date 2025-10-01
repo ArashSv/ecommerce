@@ -143,6 +143,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
+            'brand',
             'slug',
             'meta_title',
             'meta_description',
