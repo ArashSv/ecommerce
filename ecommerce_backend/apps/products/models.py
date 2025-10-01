@@ -5,6 +5,7 @@ from PIL import Image as PILImage
 from django.db import models
 from django.db.models import F, Sum
 from treebeard.mp_tree import MP_Node
+from taggit.managers import TaggableManager
 
 
 class BaseModel(models.Model):
@@ -89,6 +90,7 @@ class Product(BaseModel):
     meta_description = models.TextField(null=True, blank=True)
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
+    tags = TaggableManager(blank=True)
 
     @property
     def main_image(self):
