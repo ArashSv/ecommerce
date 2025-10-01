@@ -10,9 +10,14 @@ from apps.products.models import (
 )
 
 
+class ReadOnlyModelSerializer(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.read_only = True
 
 
-class CategoryTreeSerializer(serializers.ModelSerializer):
+class CategoryTreeSerializer(ReadOnlyModelSerializer):
     children = serializers.SerializerMethodField()
 
     def get_children(self, obj):
@@ -23,59 +28,56 @@ class CategoryTreeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'slug', 'description', 'children')
 
 
-class CategoryNodeSerializer(serializers.ModelSerializer):
+class CategoryNodeSerializer(ReadOnlyModelSerializer):
     class Meta:
         model = Category
         fields = '__all__'
 
 
-class ImageSerializer(serializers.ModelSerializer):
+class ImageSerializer(ReadOnlyModelSerializer):
     class Meta:
         model = Image
         fields = ('id', 'file', 'width', 'height')
 
 
-class ProductImageSerializer(serializers.ModelSerializer):
+class ProductImageSerializer(ReadOnlyModelSerializer):
     image = ImageSerializer()
 
     class Meta:
         model = ProductImage
-        fields = ('order', 'alt_text', 'image')
+        fields = ('id', 'order', 'alt_text', 'image')
 
 
-class MainImageSerializer(serializers.ModelSerializer):
+class MainImageSerializer(ReadOnlyModelSerializer):
     class Meta:
         model = ProductImage
         fields = ('id',)
 
 
-class OptionValueSerializer(serializers.ModelSerializer):
+class OptionValueSerializer(ReadOnlyModelSerializer):
     class Meta:
         model = OptionValue
         fields = ('id', 'value')
-        read_only_fields = fields
 
 
-class OptionSerializer(serializers.ModelSerializer):
+class OptionSerializer(ReadOnlyModelSerializer):
     values = OptionValueSerializer(many=True, read_only=True)
 
     class Meta:
         model = Option
         fields = ('id', 'name', 'values')
-        read_only_fields = fields
 
 
-class VariantOptionValueSerializer(serializers.ModelSerializer):
+class VariantOptionValueSerializer(ReadOnlyModelSerializer):
     option = OptionSerializer(read_only=True)
     selected_value = OptionValueSerializer(source='value',read_only=True)
 
     class Meta:
         model = VariantOptionValue
         fields = ('option', 'selected_value')
-        read_only_fields = fields
 
 
-class ProductVariantSerializer(serializers.ModelSerializer):
+class ProductVariantSerializer(ReadOnlyModelSerializer):
     option_values = VariantOptionValueSerializer(many=True, read_only=True)
     stockrecords = StockRecordSerializer(many=True, read_only=True)
     total_available_quantity = serializers.SerializerMethodField()
@@ -86,32 +88,29 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVariant
         fields = ('id', 'sku', 'option_values', 'stockrecords', 'is_available', 'total_available_quantity')
-        read_only_fields = fields
 
 
-class MainVariantSerializer(serializers.ModelSerializer):
+class MainVariantSerializer(ReadOnlyModelSerializer):
     class Meta:
         model = ProductVariant
         fields = ('id',)
 
 
-class AttributeValueSerializer(serializers.ModelSerializer):
+class AttributeValueSerializer(ReadOnlyModelSerializer):
     class Meta:
         model = AttributeValue
         fields = ('id', 'value')
-        read_only_fields = fields
 
 
-class AttributeSerializer(serializers.ModelSerializer):
+class AttributeSerializer(ReadOnlyModelSerializer):
     values = AttributeValueSerializer(many=True, read_only=True)
 
     class Meta:
         model = Attribute
         fields = ('id', 'name', 'values')
-        read_only_fields = fields
 
 
-class ProductAttributeValueSerializer(serializers.ModelSerializer):
+class ProductAttributeValueSerializer(ReadOnlyModelSerializer):
     attribute = AttributeSerializer(read_only=True)
     selected_value = AttributeValueSerializer(source='value', read_only=True)
 
@@ -119,10 +118,8 @@ class ProductAttributeValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductAttributeValue
         fields = ('attribute', 'selected_value')
-        read_only_fields = fields
 
-
-class ProductSerializer(serializers.ModelSerializer):
+class ProductSerializer(ReadOnlyModelSerializer):
     category = CategoryTreeSerializer(many=True, read_only=True)
     attribute_values = ProductAttributeValueSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
@@ -156,7 +153,6 @@ class ProductSerializer(serializers.ModelSerializer):
             'product_images',
             'main_image_id',
         )
-        read_only_fields = fields
 
 
 
