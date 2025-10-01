@@ -3,7 +3,8 @@ from datetime import datetime
 import hashlib
 from PIL import Image as PILImage
 from django.db import models
-from django.db.models import F, Sum
+from django.db.models import F, Sum, ForeignKey
+from django.utils.text import slugify
 from treebeard.mp_tree import MP_Node
 from taggit.managers import TaggableManager
 
@@ -78,6 +79,23 @@ class Category(BaseModel, MP_Node):
         verbose_name_plural = "Categories"
 
 
+class ProductBrand(BaseModel):
+    name = models.CharField(max_length=128, unique=True)
+    slug = models.SlugField(unique=True, allow_unicode=True)
+    description = models.TextField(blank=True, null=True)
+    website = models.URLField(blank=True, null=True)
+    tags = TaggableManager(blank=True)
+
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name, allow_unicode=True)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
 class Product(BaseModel):
     product_type = models.ForeignKey(
         ProductType, on_delete=models.PROTECT, related_name='products'
@@ -91,6 +109,8 @@ class Product(BaseModel):
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
     tags = TaggableManager(blank=True)
+    brand = ForeignKey(ProductBrand, on_delete=models.SET_NULL, null=True, blank=True)
+
 
     @property
     def main_image(self):
