@@ -7,6 +7,7 @@ from django.db.models import F, Sum, ForeignKey
 from django.utils.text import slugify
 from treebeard.mp_tree import MP_Node
 from taggit.managers import TaggableManager
+from django.core.exceptions import ValidationError
 
 
 class BaseModel(models.Model):
@@ -204,6 +205,14 @@ class ProductAttributeValue(BaseModel):
     class Meta:
         unique_together = ('product', 'attribute')
 
+
+    def clean(self):
+        if self.product.product_type_id != self.attribute.product_type_id:
+            raise ValidationError("")
+
+        if self.attribute.id != self.value.attribute_id:
+            raise ValidationError("")
+
     def __str__(self):
         return f"{self.product.name} | {self.attribute.name}: {self.value.value}"
 
@@ -268,7 +277,6 @@ class VariantOptionValue(BaseModel):
         unique_together = ('variant', 'option')
 
     def clean(self):
-        from django.core.exceptions import ValidationError
         if self.value.option.id != self.option.id:
             raise ValidationError()
 
