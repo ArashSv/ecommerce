@@ -119,6 +119,15 @@ class ProductAttributeValueSerializer(ReadOnlyModelSerializer):
         model = ProductAttributeValue
         fields = ('id', 'attribute', 'selected_value')
 
+
+class ProductBrandSerializer(TaggitSerializer, ReadOnlyModelSerializer):
+    tags = TagListSerializerField()
+
+    class Meta:
+        model = ProductBrand
+        fields = ('id', 'name', 'description', 'slug', 'website', 'tags')
+
+
 class ProductSerializer(ReadOnlyModelSerializer):
     category = CategoryTreeSerializer(read_only=True)
     attribute_values = ProductAttributeValueSerializer(many=True, read_only=True)
