@@ -6,7 +6,8 @@ from apps.products.models import (
     Image, ProductImage, Product,
     Category, Option, OptionValue,
     ProductVariant, VariantOptionValue,
-    Attribute, AttributeValue, ProductAttributeValue
+    Attribute, AttributeValue, ProductAttributeValue,
+    ProductBrand
 )
 
 
@@ -130,6 +131,7 @@ class ProductBrandSerializer(TaggitSerializer, ReadOnlyModelSerializer):
 
 class ProductSerializer(ReadOnlyModelSerializer):
     category = CategoryTreeSerializer(read_only=True)
+    brand = ProductBrandSerializer(read_only=True)
     attribute_values = ProductAttributeValueSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
     product_images = ProductImageSerializer(many=True, read_only=True)
@@ -143,6 +145,7 @@ class ProductSerializer(ReadOnlyModelSerializer):
 
     def get_main_variant_id(self, obj):
         return MainVariantSerializer(obj.main_variant).data
+
 
     class Meta:
         model = Product
