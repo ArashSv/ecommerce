@@ -138,6 +138,13 @@ class Product(BaseModel):
         ordering = ['name']
 
 
+    def clean(self):
+        if self.default_variant and self.default_variant.product_id != self.id:
+            raise ValidationError("")
+
+        if self.default_image and self.default_image.product_id != self.id:
+            raise ValidationError("")
+
     def __str__(self):
         return self.name
 
