@@ -120,7 +120,7 @@ class ProductAttributeValueSerializer(ReadOnlyModelSerializer):
         fields = ('id', 'attribute', 'selected_value')
 
 class ProductSerializer(ReadOnlyModelSerializer):
-    category = CategoryTreeSerializer(many=True, read_only=True)
+    category = CategoryTreeSerializer(read_only=True)
     attribute_values = ProductAttributeValueSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
     product_images = ProductImageSerializer(many=True, read_only=True)
