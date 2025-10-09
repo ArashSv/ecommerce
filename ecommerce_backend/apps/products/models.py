@@ -277,8 +277,11 @@ class VariantOptionValue(BaseModel):
         unique_together = ('variant', 'option')
 
     def clean(self):
-        if self.value.option.id != self.option.id:
-            raise ValidationError()
+        if self.value.option_id != self.option_id:
+            raise ValidationError("")
+
+        if self.variant.product.product_type_id != self.option.product_type_id:
+            raise ValidationError("")
 
     def __str__(self):
         return f"{self.variant.product.name} | {self.option.name}: {self.value.value}"
