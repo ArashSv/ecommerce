@@ -34,9 +34,19 @@ class CategoryTreeSerializer(ReadOnlyModelSerializer):
 
 
 class CategoryNodeSerializer(ReadOnlyModelSerializer):
+    children = serializers.SerializerMethodField()
+    has_children = serializers.SerializerMethodField()
+
+    def get_children(self, obj):
+        return CategoryTreeSerializer(obj.get_children().order_by('path'), many=True).data
+
+    def get_has_children(self, obj):
+        return obj.numchild > 0
+
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ('id', 'name', 'description', 'slug', 'has_children', 'numchild', 'children',
+                  'path', 'depth')
 
 
 class ImageSerializer(ReadOnlyModelSerializer):
@@ -133,6 +143,7 @@ class ProductBrandSerializer(TaggitSerializer, ReadOnlyModelSerializer):
         fields = ('id', 'name', 'description', 'slug', 'website', 'tags')
 
 
+
 class ProductSerializer(ReadOnlyModelSerializer):
     category = CategoryTreeSerializer(read_only=True)
     brand = ProductBrandSerializer(read_only=True)
@@ -169,6 +180,7 @@ class ProductSerializer(ReadOnlyModelSerializer):
             'product_images',
             'main_image_id',
         )
+
 
 
 
