@@ -20,13 +20,17 @@ class ReadOnlyModelSerializer(serializers.ModelSerializer):
 
 class CategoryTreeSerializer(ReadOnlyModelSerializer):
     children = serializers.SerializerMethodField()
+    has_children = serializers.SerializerMethodField()
 
     def get_children(self, obj):
         return CategoryTreeSerializer(obj.get_children(), many=True).data
 
+    def get_has_children(self, obj):
+        return obj.numchild > 0
+
     class Meta:
         model = Category
-        fields = ('id', 'name', 'slug', 'description', 'children')
+        fields = ('id', 'name', 'slug', 'description', 'has_children', 'numchild', 'children')
 
 
 class CategoryNodeSerializer(ReadOnlyModelSerializer):
