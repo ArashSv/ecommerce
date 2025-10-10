@@ -74,7 +74,7 @@ class Category(BaseModel, MP_Node):
     node_order_by = ['name']
 
     def __str__(self):
-        return self.name
+        return " > ".join([ancestor.name for ancestor in self.get_ancestors()] + [self.name])
 
     class Meta:
         verbose_name_plural = "Categories"
