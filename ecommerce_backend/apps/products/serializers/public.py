@@ -78,6 +78,39 @@ class CategoryNodeSerializer(ReadOnlyModelSerializer):
                   'path', 'depth')
 
 
+class ProductCategorySerializer(ReadOnlyModelSerializer):
+    parent = serializers.SerializerMethodField()
+    ancestors = serializers.SerializerMethodField()
+
+    def get_parent(self, obj):
+        parent = obj.get_parent()
+        if not parent:
+            return None
+        return {
+            'id': parent.id,
+            'name': parent.name,
+            'slug': parent.slug,
+            'path': parent.path,
+            'depth': parent.depth,
+        }
+
+    def get_ancestors(self, obj):
+        return [
+            {
+                'id': a.id,
+                'name': a.name,
+                'slug': a.slug,
+                'path': a.path,
+                'depth': a.depth,
+            }
+            for a in obj.get_ancestors()
+        ]
+
+    class Meta:
+        model = Category
+        fields = ('id', 'name', 'slug', 'path', 'depth', 'parent', 'ancestors')
+
+
 class ImageSerializer(ReadOnlyModelSerializer):
     class Meta:
         model = Image
@@ -172,9 +205,8 @@ class ProductBrandSerializer(TaggitSerializer, ReadOnlyModelSerializer):
         fields = ('id', 'name', 'description', 'slug', 'website', 'tags')
 
 
-
 class ProductSerializer(ReadOnlyModelSerializer):
-    category = CategoryTreeSerializer(read_only=True)
+    category = ProductCategorySerializer(read_only=True)
     brand = ProductBrandSerializer(read_only=True)
     attribute_values = ProductAttributeValueSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
