@@ -30,7 +30,7 @@ class CategoryTreeSerializer(ReadOnlyModelSerializer):
 
     class Meta:
         model = Category
-        fields = ('id', 'name', 'slug', 'description', 'has_children', 'numchild', 'children')
+        fields = ('id', 'name', 'slug', 'description', 'has_children', 'numchild', 'children', 'path', 'depth')
 
 
 class CategoryNodeSerializer(ReadOnlyModelSerializer):
