@@ -36,16 +36,45 @@ class CategoryTreeSerializer(ReadOnlyModelSerializer):
 class CategoryNodeSerializer(ReadOnlyModelSerializer):
     children = serializers.SerializerMethodField()
     has_children = serializers.SerializerMethodField()
+    parent = serializers.SerializerMethodField()
+    ancestors = serializers.SerializerMethodField()
+
+
+    def get_parent(self, obj):
+        parent = obj.get_parent()
+        if not parent:
+            return None
+        return {
+            'id': parent.id,
+            'name': parent.name,
+            'slug': parent.slug,
+            'path': parent.path,
+            'depth': parent.depth,
+        }
+
+    def get_ancestors(self, obj):
+        ancestors_qs = obj.get_ancestors()
+        return [
+            {
+                'id': a.id,
+                'name': a.name,
+                'slug': a.slug,
+                'path': a.path,
+                'depth': a.depth,
+            }
+            for a in ancestors_qs
+        ]
 
     def get_children(self, obj):
-        return CategoryTreeSerializer(obj.get_children().order_by('path'), many=True).data
+        return CategoryTreeSerializer(obj.get_children(), many=True).data
 
     def get_has_children(self, obj):
         return obj.numchild > 0
 
+
     class Meta:
         model = Category
-        fields = ('id', 'name', 'description', 'slug', 'has_children', 'numchild', 'children',
+        fields = ('id', 'name', 'description', 'slug', 'parent', 'ancestors', 'has_children', 'numchild', 'children',
                   'path', 'depth')
 
 
