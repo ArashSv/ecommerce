@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'treebeard',
     'taggit',
     'taggit_serializer',
+    'django_filters',
 
     # Local apps
     'apps.cart',
