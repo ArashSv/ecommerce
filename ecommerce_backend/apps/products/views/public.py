@@ -4,6 +4,8 @@ from apps.products.serializers.public import ProductSerializer, CategoryTreeSeri
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    lookup_field = 'slug'
+
     def get_queryset(self):
         if self.action == 'list':
             return Category.objects.filter(depth=1)
