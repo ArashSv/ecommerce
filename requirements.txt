@@ -12,3 +12,4 @@ django-treebeard==4.7.1
 psycopg2-binary
 django-taggit
 django-taggit-serializer
+django-filter==25.1
