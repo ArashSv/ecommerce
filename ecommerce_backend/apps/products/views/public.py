@@ -3,6 +3,11 @@ from apps.products.models import Product, Category
 from apps.products.serializers.public import ProductSerializer, CategoryTreeSerializer, CategoryNodeSerializer
 
 
+class ProductViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = 'slug'
 
