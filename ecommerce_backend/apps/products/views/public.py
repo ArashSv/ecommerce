@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.filters import SearchFilter
 from apps.products.models import Product, Category
 from apps.products.serializers.public import ProductSerializer, CategoryTreeSerializer, CategoryNodeSerializer
 
@@ -6,6 +7,8 @@ from apps.products.serializers.public import ProductSerializer, CategoryTreeSeri
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ('name', 'description', 'tags__name', 'brand__name', 'product_type__name')
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
