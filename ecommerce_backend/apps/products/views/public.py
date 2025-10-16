@@ -1,13 +1,16 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 from apps.products.models import Product, Category
 from apps.products.serializers.public import ProductSerializer, CategoryTreeSerializer, CategoryNodeSerializer
+from apps.products.filters import ProductFilter
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    filter_backends = [SearchFilter]
+    filter_backends = [SearchFilter, DjangoFilterBackend]
+    filterset_class = ProductFilter
     search_fields = ('name', 'description', 'tags__name', 'brand__name', 'product_type__name')
 
 
