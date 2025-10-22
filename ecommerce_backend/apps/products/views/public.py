@@ -1,5 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from apps.products.models import Product, Category
 from apps.products.serializers.public import ProductSerializer, CategoryTreeSerializer, CategoryNodeSerializer
@@ -30,3 +32,11 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
             case 'retrieve':
                 return CategoryNodeSerializer
         return None
+
+    @action(detail=True, methods=['get'], url_path='products')
+    def products(self, request, slug=None):
+        category = self.get_object()
+        products = Product.objects.filter(category=category)
+
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
