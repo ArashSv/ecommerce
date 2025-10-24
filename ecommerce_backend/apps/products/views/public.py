@@ -3,8 +3,9 @@ from rest_framework.response import Response
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
-from apps.products.models import Product, Category
-from apps.products.serializers.public import ProductSerializer, CategoryTreeSerializer, CategoryNodeSerializer
+from apps.products.models import Product, Category, ProductBrand
+from apps.products.serializers.public import (ProductSerializer, CategoryTreeSerializer, CategoryNodeSerializer,
+                                              ProductBrandSerializer)
 from apps.products.filters import ProductFilter
 
 
@@ -40,3 +41,8 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ProductBrandViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ProductBrand.objects.all()
+    serializer_class = ProductBrandSerializer
