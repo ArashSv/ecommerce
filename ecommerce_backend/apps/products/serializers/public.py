@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from taggit.serializers import TagListSerializerField, TaggitSerializer
-
+from taggit.models import Tag
 from apps.inventory.serializers.public import StockRecordSerializer
 from apps.products.models import (
     Image, ProductImage, Product,
@@ -16,6 +15,12 @@ class ReadOnlyModelSerializer(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.read_only = True
+
+
+class TagSerializer(ReadOnlyModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ['id', 'name', 'slug']
 
 
 class CategoryTreeSerializer(ReadOnlyModelSerializer):
@@ -197,8 +202,8 @@ class ProductAttributeValueSerializer(ReadOnlyModelSerializer):
         fields = ('id', 'attribute', 'selected_value')
 
 
-class ProductBrandSerializer(TaggitSerializer, ReadOnlyModelSerializer):
-    tags = TagListSerializerField()
+class ProductBrandSerializer(ReadOnlyModelSerializer):
+    tags = TagSerializer(many=True)
 
     class Meta:
         model = ProductBrand
@@ -211,7 +216,7 @@ class ProductSerializer(ReadOnlyModelSerializer):
     attribute_values = ProductAttributeValueSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
     product_images = ProductImageSerializer(many=True, read_only=True)
-    tags = TagListSerializerField()
+    tags = TagSerializer(many=True)
 
     main_image_id = serializers.SerializerMethodField()
     main_variant_id = serializers.SerializerMethodField()
