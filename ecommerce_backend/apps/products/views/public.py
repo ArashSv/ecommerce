@@ -3,7 +3,7 @@ from taggit.models import Tag
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 from apps.products.models import Product, Category, ProductBrand
 from apps.products.serializers.public import (ProductSerializer, CategoryTreeSerializer, CategoryNodeSerializer,
                                               ProductBrandSerializer, TagSerializer)
@@ -13,9 +13,10 @@ from apps.products.filters import ProductFilter
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    filter_backends = [SearchFilter, DjangoFilterBackend]
+    filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter]
     filterset_class = ProductFilter
     search_fields = ('name', 'description', 'tags__name', 'brand__name', 'product_type__name')
+    ordering_fields = ('created_at',)
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
