@@ -1,11 +1,12 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from taggit.models import Tag
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from apps.products.models import Product, Category, ProductBrand
 from apps.products.serializers.public import (ProductSerializer, CategoryTreeSerializer, CategoryNodeSerializer,
-                                              ProductBrandSerializer)
+                                              ProductBrandSerializer, TagSerializer)
 from apps.products.filters import ProductFilter
 
 
@@ -46,3 +47,14 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 class ProductBrandViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ProductBrand.objects.all()
     serializer_class = ProductBrandSerializer
+
+
+class ProductTagViewSet(viewsets.ReadOnlyModelViewSet):
+    lookup_field = 'slug'
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+
+    def get_queryset(self):
+        return Tag.objects.filter(
+            taggit_taggeditem_items__content_type__model='product'
+        ).distinct()
