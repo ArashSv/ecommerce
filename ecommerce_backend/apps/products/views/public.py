@@ -48,6 +48,15 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 class ProductBrandViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ProductBrand.objects.all()
     serializer_class = ProductBrandSerializer
+    lookup_field = 'slug'
+
+    @action(detail=True, methods=['get'], url_path='products')
+    def products(self, request, slug=None):
+        brand = self.get_object()
+        products = Product.objects.filter(brand=brand)
+
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ProductTagViewSet(viewsets.ReadOnlyModelViewSet):
