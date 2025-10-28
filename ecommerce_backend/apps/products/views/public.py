@@ -11,8 +11,11 @@ from apps.products.filters import ProductFilter
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
+    lookup_field = 'slug'
+
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
     filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter]
     filterset_class = ProductFilter
     search_fields = ('name', 'description', 'tags__name', 'brand__name', 'product_type__name')
