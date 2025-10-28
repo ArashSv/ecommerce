@@ -61,10 +61,13 @@ class ProductBrandViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ProductTagViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = 'slug'
-    queryset = Tag.objects.all()
+    queryset = Tag.objects.filter(taggit_taggeditem_items__content_type__model='product').distinct()
     serializer_class = TagSerializer
 
-    def get_queryset(self):
-        return Tag.objects.filter(
-            taggit_taggeditem_items__content_type__model='product'
-        ).distinct()
+    @action(detail=True, methods=['get'], url_path='products')
+    def products(self, request, slug=None):
+        tag = self.get_object()
+        products = Product.objects.filter(tags__slug=tag)
+
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
