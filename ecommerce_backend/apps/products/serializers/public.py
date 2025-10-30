@@ -215,6 +215,7 @@ class ProductSerializer(ReadOnlyModelSerializer):
     brand = ProductBrandSerializer(read_only=True)
     attribute_values = ProductAttributeValueSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
+    selected_variant = serializers.SerializerMethodField()
     product_images = ProductImageSerializer(many=True, read_only=True)
     tags = TagSerializer(many=True)
 
@@ -226,6 +227,17 @@ class ProductSerializer(ReadOnlyModelSerializer):
 
     def get_main_variant_id(self, obj):
         return MainVariantSerializer(obj.main_variant).data
+
+    def get_selected_variant(self, obj):
+        request = self.context.get('request')
+        variant_id = request.query_params.get('variant_id')
+        if not variant_id:
+            return ProductVariantSerializer(obj.main_variant).data
+        try:
+            variant = obj.variants.get(id=variant_id)
+        except ProductVariant.DoesNotExist:
+            variant = obj.main_variant
+        return ProductVariantSerializer(variant or obj.main_variant).data
 
 
     class Meta:
@@ -243,6 +255,7 @@ class ProductSerializer(ReadOnlyModelSerializer):
             'attribute_values',
             'variants',
             'main_variant_id',
+            'selected_variant',
             'product_images',
             'main_image_id',
         )
