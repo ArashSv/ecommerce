@@ -41,6 +41,10 @@ class StockRecord(BaseModel):
     def available_quantity(self):
         return max(self.quantity - self.reserved_quantity, 0)
 
+    @property
+    def is_available(self):
+        return self.available_quantity > 0
+
     def __str__(self):
         return f"{self.warehouse} : {self.product_variant}({self.available_quantity})"
 
