@@ -8,6 +8,7 @@ from django.utils.text import slugify
 from treebeard.mp_tree import MP_Node
 from taggit.managers import TaggableManager
 from django.core.exceptions import ValidationError
+from apps.inventory.models import StockRecord
 
 
 class BaseModel(models.Model):
@@ -256,6 +257,7 @@ class ProductVariant(BaseModel):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name='variants'
     )
+    default_stockrecord = models.ForeignKey(StockRecord, on_delete=models.SET_NULL, null=True, blank=True)
     sku = models.CharField(max_length=64, null=True, blank=True)
 
     @property
@@ -268,6 +270,10 @@ class ProductVariant(BaseModel):
     @property
     def is_available(self):
         return self.total_available_quantity > 0
+
+    def clean(self):
+        if self.default_stockrecord and self.default_stockrecord.product_variant_id != self.id:
+            raise ValidationError("")
 
     def __str__(self):
         return f"{self.product.name}"
