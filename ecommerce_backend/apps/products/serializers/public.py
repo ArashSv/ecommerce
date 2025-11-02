@@ -210,7 +210,11 @@ class ProductBrandSerializer(ReadOnlyModelSerializer):
         fields = ('id', 'name', 'description', 'slug', 'website', 'tags')
 
 
-class ProductSerializer(ReadOnlyModelSerializer):
+class ProductListSerializer(ReadOnlyModelSerializer):
+    ...
+
+
+class ProductDetailSerializer(ReadOnlyModelSerializer):
     category = ProductCategorySerializer(read_only=True)
     brand = ProductBrandSerializer(read_only=True)
     attribute_values = ProductAttributeValueSerializer(many=True, read_only=True)
@@ -239,7 +243,6 @@ class ProductSerializer(ReadOnlyModelSerializer):
             variant = obj.main_variant
         return ProductVariantSerializer(variant or obj.main_variant).data
 
-
     class Meta:
         model = Product
         fields = (
@@ -259,9 +262,4 @@ class ProductSerializer(ReadOnlyModelSerializer):
             'product_images',
             'main_image_id',
         )
-
-
-
-
-
 
