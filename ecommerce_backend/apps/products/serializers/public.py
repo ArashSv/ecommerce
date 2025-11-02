@@ -130,12 +130,6 @@ class ProductImageSerializer(ReadOnlyModelSerializer):
         fields = ('id', 'order', 'alt_text', 'image')
 
 
-class MainImageSerializer(ReadOnlyModelSerializer):
-    class Meta:
-        model = ProductImage
-        fields = ('id',)
-
-
 class OptionValueSerializer(ReadOnlyModelSerializer):
     class Meta:
         model = OptionValue
@@ -214,12 +208,12 @@ class ProductListSerializer(ReadOnlyModelSerializer):
     category = ProductCategorySerializer(read_only=True)
     brand = ProductBrandSerializer(read_only=True)
     attribute_values = ProductAttributeValueSerializer(many=True, read_only=True)
-    main_image_id = serializers.SerializerMethodField()
+    main_image = serializers.SerializerMethodField()
     main_variant_id = serializers.SerializerMethodField()
     tags = TagSerializer(many=True)
 
-    def get_main_image_id(self, obj):
-        return MainImageSerializer(obj.main_image).data
+    def get_main_image(self, obj):
+        return ProductImageSerializer(obj.main_image).data
 
     def get_main_variant_id(self, obj):
         return MainVariantSerializer(obj.main_variant).data
@@ -236,7 +230,7 @@ class ProductListSerializer(ReadOnlyModelSerializer):
             'tags',
             'attribute_values',
             'main_variant_id',
-            'main_image_id',
+            'main_image',
         )
 
 
@@ -249,11 +243,11 @@ class ProductDetailSerializer(ReadOnlyModelSerializer):
     product_images = ProductImageSerializer(many=True, read_only=True)
     tags = TagSerializer(many=True)
 
-    main_image_id = serializers.SerializerMethodField()
+    main_image = serializers.SerializerMethodField()
     main_variant_id = serializers.SerializerMethodField()
 
-    def get_main_image_id(self, obj):
-        return MainImageSerializer(obj.main_image).data
+    def get_main_image(self, obj):
+        return ProductImageSerializer(obj.main_image).data
 
     def get_main_variant_id(self, obj):
         return MainVariantSerializer(obj.main_variant).data
@@ -286,6 +280,6 @@ class ProductDetailSerializer(ReadOnlyModelSerializer):
             'main_variant_id',
             'selected_variant',
             'product_images',
-            'main_image_id',
+            'main_image',
         )
 
