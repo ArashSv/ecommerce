@@ -209,14 +209,14 @@ class ProductListSerializer(ReadOnlyModelSerializer):
     brand = ProductBrandSerializer(read_only=True)
     attribute_values = ProductAttributeValueSerializer(many=True, read_only=True)
     main_image = serializers.SerializerMethodField()
-    main_variant_id = serializers.SerializerMethodField()
+    main_variant = serializers.SerializerMethodField()
     tags = TagSerializer(many=True)
 
     def get_main_image(self, obj):
         return ProductImageSerializer(obj.main_image).data
 
-    def get_main_variant_id(self, obj):
-        return MainVariantSerializer(obj.main_variant).data
+    def get_main_variant(self, obj):
+        return ProductVariantSerializer(obj.main_variant).data
 
     class Meta:
         model = Product
@@ -229,7 +229,7 @@ class ProductListSerializer(ReadOnlyModelSerializer):
             'description',
             'tags',
             'attribute_values',
-            'main_variant_id',
+            'main_variant',
             'main_image',
         )
 
@@ -244,13 +244,13 @@ class ProductDetailSerializer(ReadOnlyModelSerializer):
     tags = TagSerializer(many=True)
 
     main_image = serializers.SerializerMethodField()
-    main_variant_id = serializers.SerializerMethodField()
+    main_variant = serializers.SerializerMethodField()
 
     def get_main_image(self, obj):
         return ProductImageSerializer(obj.main_image).data
 
-    def get_main_variant_id(self, obj):
-        return MainVariantSerializer(obj.main_variant).data
+    def get_main_variant(self, obj):
+        return ProductVariantSerializer(obj.main_variant).data
 
     def get_selected_variant(self, obj):
         request = self.context.get('request')
@@ -277,7 +277,7 @@ class ProductDetailSerializer(ReadOnlyModelSerializer):
             'tags',
             'attribute_values',
             'variants',
-            'main_variant_id',
+            'main_variant',
             'selected_variant',
             'product_images',
             'main_image',
