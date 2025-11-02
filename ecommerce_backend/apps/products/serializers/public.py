@@ -211,7 +211,33 @@ class ProductBrandSerializer(ReadOnlyModelSerializer):
 
 
 class ProductListSerializer(ReadOnlyModelSerializer):
-    ...
+    category = ProductCategorySerializer(read_only=True)
+    brand = ProductBrandSerializer(read_only=True)
+    attribute_values = ProductAttributeValueSerializer(many=True, read_only=True)
+    main_image_id = serializers.SerializerMethodField()
+    main_variant_id = serializers.SerializerMethodField()
+    tags = TagSerializer(many=True)
+
+    def get_main_image_id(self, obj):
+        return MainImageSerializer(obj.main_image).data
+
+    def get_main_variant_id(self, obj):
+        return MainVariantSerializer(obj.main_variant).data
+
+    class Meta:
+        model = Product
+        fields = (
+            'id',
+            'name',
+            'brand',
+            'slug',
+            'category',
+            'description',
+            'tags',
+            'attribute_values',
+            'main_variant_id',
+            'main_image_id',
+        )
 
 
 class ProductDetailSerializer(ReadOnlyModelSerializer):
