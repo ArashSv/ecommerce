@@ -271,6 +271,22 @@ class ProductVariant(BaseModel):
     def is_available(self):
         return self.total_available_quantity > 0
 
+    @property
+    def main_stockrecord(self):
+        if self.default_stockrecord:
+            return self.default_stockrecord
+
+        available_stockrecords = (
+            self.stockrecords
+            .filter(quantity__gt=F('reserved_quantity'))
+            .order_by('sales_price')
+        )
+
+        if available_stockrecords.exists():
+            return available_stockrecords.first()
+
+        return self.stockrecords.first()
+
     def clean(self):
         if self.default_stockrecord and self.default_stockrecord.product_variant_id != self.id:
             raise ValidationError("")
