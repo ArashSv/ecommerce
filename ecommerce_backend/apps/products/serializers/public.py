@@ -154,22 +154,32 @@ class VariantOptionValueSerializer(ReadOnlyModelSerializer):
 
 
 class ProductVariantSummarySerializer(ReadOnlyModelSerializer):
+    main_stockrecord = serializers.SerializerMethodField()
+
+    def get_main_stockrecord(self, obj):
+        return StockRecordSerializer(obj.main_stockrecord).data
+
     class Meta:
         model = ProductVariant
-        fields = ('id', 'is_available')
+        fields = ('id', 'is_available', 'main_stockrecord')
 
 
 class ProductVariantSerializer(ReadOnlyModelSerializer):
     option_values = VariantOptionValueSerializer(many=True, read_only=True)
     stockrecords = StockRecordSerializer(many=True, read_only=True)
+    main_stockrecord = serializers.SerializerMethodField()
     total_available_quantity = serializers.SerializerMethodField()
+
+    def get_main_stockrecord(self, obj):
+        return StockRecordSerializer(obj.main_stockrecord).data
 
     def get_total_available_quantity(self, obj):
         return obj.total_available_quantity
 
     class Meta:
         model = ProductVariant
-        fields = ('id', 'sku', 'option_values', 'stockrecords', 'is_available', 'total_available_quantity')
+        fields = ('id', 'sku', 'is_available', 'option_values', 'main_stockrecord', 'stockrecords',
+                  'total_available_quantity')
 
 
 class MainVariantSerializer(ReadOnlyModelSerializer):
