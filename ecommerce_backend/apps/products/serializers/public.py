@@ -153,6 +153,12 @@ class VariantOptionValueSerializer(ReadOnlyModelSerializer):
         fields = ('id', 'option', 'selected_value')
 
 
+class ProductVariantSummarySerializer(ReadOnlyModelSerializer):
+    class Meta:
+        model = ProductVariant
+        fields = ('id', 'is_available')
+
+
 class ProductVariantSerializer(ReadOnlyModelSerializer):
     option_values = VariantOptionValueSerializer(many=True, read_only=True)
     stockrecords = StockRecordSerializer(many=True, read_only=True)
@@ -216,7 +222,7 @@ class ProductListSerializer(ReadOnlyModelSerializer):
         return ProductImageSerializer(obj.main_image).data
 
     def get_main_variant(self, obj):
-        return ProductVariantSerializer(obj.main_variant).data
+        return ProductVariantSummarySerializer(obj.main_variant).data
 
     class Meta:
         model = Product
