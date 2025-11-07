@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from taggit.models import Tag
+from apps.products.services import product_variants, utils
 from apps.inventory.serializers.public import StockRecordSerializer
 from apps.products.models import (
     Image, ProductImage, Product,
@@ -254,13 +255,24 @@ class ProductDetailSerializer(ReadOnlyModelSerializer):
     category = ProductCategorySerializer(read_only=True)
     brand = ProductBrandSerializer(read_only=True)
     attribute_values = ProductAttributeValueSerializer(many=True, read_only=True)
-    variants = ProductVariantSerializer(many=True, read_only=True)
+    variants = serializers.SerializerMethodField()
     selected_variant = serializers.SerializerMethodField()
     product_images = ProductImageSerializer(many=True, read_only=True)
     tags = TagSerializer(many=True)
 
     main_image = serializers.SerializerMethodField()
     main_variant = serializers.SerializerMethodField()
+
+    def get_variants(self, obj):
+        request = self.context.get('request')
+        options_dict = utils.parse_options_query(request.query_params.get('options')) if request else {}
+
+        if options_dict:
+            qs = product_variants.filter_variants_by_options(obj, options_dict)
+        else:
+            qs = obj.variants.all()
+
+        return ProductVariantSerializer(qs, many=True).data
 
     def get_main_image(self, obj):
         return ProductImageSerializer(obj.main_image).data
@@ -270,14 +282,36 @@ class ProductDetailSerializer(ReadOnlyModelSerializer):
 
     def get_selected_variant(self, obj):
         request = self.context.get('request')
-        variant_id = request.query_params.get('variant_id')
-        if not variant_id:
+        if not request:
             return ProductVariantSerializer(obj.main_variant).data
+
+        variant = self._get_variant_by_id(obj, request.query_params.get('variant_id'))
+        if variant:
+            return ProductVariantSerializer(variant).data
+
+        variant = self._get_variant_by_options(obj, request.query_params.get('options'))
+        if variant:
+            return ProductVariantSerializer(variant).data
+
+        return ProductVariantSerializer(obj.main_variant).data
+
+    def _get_variant_by_id(self, obj, variant_id):
+        if not variant_id or not str(variant_id).isdigit():
+            return None
         try:
-            variant = obj.variants.get(id=variant_id)
+            return obj.variants.get(id=int(variant_id))
         except ProductVariant.DoesNotExist:
-            variant = obj.main_variant
-        return ProductVariantSerializer(variant or obj.main_variant).data
+            return None
+
+    def _get_variant_by_options(self, obj, options_query):
+        if not options_query:
+            return None
+        options_dict = utils.parse_options_query(options_query)
+        if not options_dict:
+            return None
+
+        variants = product_variants.filter_variants_by_options(obj, options_dict)
+        return variants.first() if variants.exists() else None
 
     class Meta:
         model = Product
