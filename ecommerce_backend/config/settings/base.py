@@ -23,6 +23,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 #Read .env file
 environ.Env.read_env(BASE_DIR / ".env")
+# check
+ENVIRONMENT = env("DJANGO_ENV", default="development")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -151,3 +153,14 @@ CELERY_RESULT_SERIALIZER = "json"
 # media settings
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# cache settings
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://{':' + env('REDIS_PASSWORD', default='') if env('REDIS_PASSWORD', default='') else ''}@{env('REDIS_HOST', default='localhost')}:{env('REDIS_PORT', default=6379, cast=int)}/{env('REDIS_DB', default=0, cast=int)}",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
