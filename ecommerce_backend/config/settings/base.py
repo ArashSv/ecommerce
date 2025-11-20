@@ -164,3 +164,10 @@ CACHES = {
         }
     }
 }
+
+# Session settings
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+SESSION_COOKIE_AGE = 1209600  # 2 هفته
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_SECURE = True if ENVIRONMENT == 'production' else False
