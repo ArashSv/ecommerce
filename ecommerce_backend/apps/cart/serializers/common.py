@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from apps.products.models import Product, ProductVariant
+from apps.products.serializers.public import VariantOptionValueSerializer
 from apps.inventory.models import StockRecord
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -9,14 +10,15 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class ProductVariantSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
+    option_values = VariantOptionValueSerializer(many=True, read_only=True)
 
     class Meta:
         model = ProductVariant
-        fields = ('id', 'options', 'product')
+        fields = ('id', 'product', 'option_values')
 
 class StockRecordSerializer(serializers.ModelSerializer):
-    variant = ProductVariantSerializer(read_only=True)
+    product_variant = ProductVariantSerializer(read_only=True)
 
     class Meta:
         model = StockRecord
-        fields = ('id', 'warehouse', 'variant', 'is_available', 'available_quantity', 'sales_price')
+        fields = ('id', 'warehouse', 'product_variant', 'is_available', 'available_quantity', 'sales_price')
