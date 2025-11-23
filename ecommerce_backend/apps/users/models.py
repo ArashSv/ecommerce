@@ -40,7 +40,7 @@ class User(AbstractBaseUser):
 
 
 class Address(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True ,related_name='addresses')
     title = models.CharField(max_length=100, blank=True)
 
     province = models.CharField(max_length=64)
