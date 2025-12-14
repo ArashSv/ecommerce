@@ -28,3 +28,6 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('mobile_number', 'email', 'password1', 'password2'),
         }),
     )
+
+
+admin.site.register(Address)
