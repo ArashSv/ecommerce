@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'apps.payments',
     'apps.products',
     'apps.users',
+    'apps.shipping',
 ]
 
 
