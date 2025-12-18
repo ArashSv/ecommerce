@@ -260,6 +260,44 @@ class ProductVariant(BaseModel):
     default_stockrecord = models.ForeignKey(StockRecord, on_delete=models.SET_NULL, null=True, blank=True)
     sku = models.CharField(max_length=64, null=True, blank=True)
 
+    # Physical properties (for shipping)
+    weight = models.PositiveIntegerField(help_text="Weight of the product in grams")
+    length = models.PositiveIntegerField(help_text="Length of the product in millimeters")
+    width = models.PositiveIntegerField(help_text="Width of the product in millimeters")
+    height = models.PositiveIntegerField(help_text="Height of the product in millimeters")
+
+    @property
+    def normalized_dimensions(self):
+        """
+        Returns dimensions sorted descending (L ≥ W ≥ H)
+        """
+        dims = [self.length, self.width, self.height]
+
+        if any(d <= 0 for d in dims):
+            raise ValueError(
+                f"Invalid dimensions for variant {self.id}: {dims}"
+            )
+
+        return tuple(sorted(dims, reverse=True))
+
+    @property
+    def base_area(self) -> int:
+        """
+        Footprint area (mm²) based on the two largest dimensions.
+        Used for packing and package base calculation.
+        """
+        length, width, _ = self.normalized_dimensions
+        return length * width
+
+    @property
+    def volume(self) -> int:
+        """
+        Physical volume of the product (mm³).
+        Used for volumetric weight and shipment splitting.
+        """
+        length, width, height = self.normalized_dimensions
+        return length * width * height
+
     @property
     def total_available_quantity(self):
         result = self.stockrecords.aggregate(
