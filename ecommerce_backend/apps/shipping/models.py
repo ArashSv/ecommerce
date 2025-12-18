@@ -1,1 +1,62 @@
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+from apps.orders.models import Order
+
+
+class Carrier(models.Model):
+    name = models.CharField(max_length=64)
+    slug = models.SlugField(allow_unicode=True)
+    code = models.CharField(max_length=32, null=True, blank=True)
+    website_url = models.URLField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        status = "active" if self.is_active else "not active"
+        return f"{self.name} - status : {status}"
+
+
+class CarrierService(models.Model):
+    carrier = models.ForeignKey(Carrier, on_delete=models.CASCADE, related_name="services")
+    name = models.CharField(max_length=64)
+    slug = models.SlugField(allow_unicode=True)
+    code = models.CharField(max_length=32, null=True, blank=True) # exam: standard, eco, express, ..
+    delivery_min = models.DurationField(default=1)
+    delivery_max = models.DurationField(default=4)
+    base_price = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+
+class ShipmentStatus(models.TextChoices):
+    PENDING = 'pending', _('Awaiting Pickup')
+    PICKED = 'picked', _('Picked Up')
+    IN_TRANSIT = 'in_transit', _('In Transit')
+    DELIVERED = 'delivered', _('Delivered')
+    RETURNED = 'returned', _('Returned')
+    CANCELLED = 'cancelled', _('Canceled')
+
+
+class Shipment(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="shipments")
+    service = models.ForeignKey(CarrierService, on_delete=models.CASCADE, related_name="shipments")
+
+    # Physical result data
+    total_weight = models.PositiveIntegerField(help_text=_("Total actual weight in grams"))
+    volumetric_weight = models.PositiveIntegerField(help_text=_("Volumetric weight in grams"))
+    chargeable_weight = models.PositiveIntegerField(help_text=_("Weight used for cost calculation"))
+    package_length = models.PositiveIntegerField(help_text=_("Package length in millimeters"))
+    package_width = models.PositiveIntegerField(help_text=_("Package width in millimeters"))
+    package_height = models.PositiveIntegerField(help_text=_("Package height in millimeters"))
+
+    shipping_cost = models.PositiveBigIntegerField(default=0)
+    tracking_number = models.CharField(max_length=128, blank=True, null=True)
+    label_url = models.URLField(null=True, blank=True)
+    status = models.CharField(max_length=32, choices=ShipmentStatus, default=ShipmentStatus.PENDING)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    shipped_at = models.DateTimeField(null=True, blank=True)
+    delivered_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Shipment #{self.id} for Order #{self.order_id} ({self.status})"
 
