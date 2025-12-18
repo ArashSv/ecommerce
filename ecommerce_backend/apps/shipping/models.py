@@ -49,8 +49,9 @@ class Shipment(models.Model):
     package_height = models.PositiveIntegerField(help_text=_("Package height in millimeters"))
 
     shipping_cost = models.PositiveBigIntegerField(default=0)
-    tracking_number = models.CharField(max_length=128, blank=True, null=True)
+    tracking_number = models.CharField(max_length=128, blank=True, null=True, db_index=True)
     label_url = models.URLField(null=True, blank=True)
+    metadata = models.JSONField(null=True, blank=True)
     status = models.CharField(max_length=32, choices=ShipmentStatus, default=ShipmentStatus.PENDING)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -58,6 +59,12 @@ class Shipment(models.Model):
     shipped_at = models.DateTimeField(null=True, blank=True)
     delivered_at = models.DateTimeField(null=True, blank=True)
 
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['order', 'status']),
+        ]
+
+
     def __str__(self):
         return f"Shipment #{self.id} for Order #{self.order_id} ({self.status})"
-
