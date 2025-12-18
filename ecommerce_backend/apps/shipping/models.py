@@ -9,6 +9,7 @@ class Carrier(models.Model):
     code = models.CharField(max_length=32, null=True, blank=True)
     website_url = models.URLField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    metadata = models.JSONField(null=True, blank=True)
 
     def __str__(self):
         status = "active" if self.is_active else "not active"
