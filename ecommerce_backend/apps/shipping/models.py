@@ -68,3 +68,12 @@ class Shipment(models.Model):
 
     def __str__(self):
         return f"Shipment #{self.id} for Order #{self.order_id} ({self.status})"
+
+
+class TrackingEvent(models.Model):
+    shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE, related_name='events')
+    event_code = models.CharField(max_length=64)  # e.g. 'PICKED', 'IN_TRANSIT'
+    message = models.TextField(null=True, blank=True)
+    location = models.CharField(max_length=255, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    raw_payload = models.JSONField(null=True, blank=True)
