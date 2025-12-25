@@ -46,6 +46,8 @@ class VerifyOTPView(APIView):
                 "tokens": get_tokens_for_user(user)
             }, status=200)
 
+        return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LogoutView(APIView):
     permission_classes = [permissions.IsAuthenticated]
