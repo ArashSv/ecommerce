@@ -1,3 +1,7 @@
+import uuid
+
+from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
 from django.db import models
 
 
@@ -52,3 +56,28 @@ class StockRecord(BaseModel):
     class Meta:
         unique_together = (('warehouse', 'product_variant'),)
 
+
+class ReservationStatus(models.TextChoices):
+    RESERVED = "reserved", _("Reserved")
+    RELEASED = "released", _("Released")
+    CONSUMED = "consumed", _("Consumed")
+
+
+class Reservation(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True)
+    checkout = models.ForeignKey('checkout.Checkout', on_delete=models.CASCADE, related_name='reservations')
+    stockrecord = models.ForeignKey(StockRecord, on_delete=models.PROTECT, related_name='reservations')
+    quantity = models.PositiveSmallIntegerField(default=1)
+    status = models.CharField(max_length=20, choices=ReservationStatus, default=ReservationStatus.RESERVED, db_index=True)
+    released_at = models.DateTimeField(null=True, blank=True)
+    consumed_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.checkout} : {self.stockrecord} x{self.quantity} ({self.status})"
+
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["status"], condition=Q(status="RESERVED"), name='reservation_reserved')
+        ]
+        unique_together = (('checkout', 'stockrecord'),)
