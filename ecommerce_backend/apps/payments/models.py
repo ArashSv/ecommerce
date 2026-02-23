@@ -62,7 +62,7 @@ class Payment(models.Model):
     currency = models.CharField(max_length=3, choices=Currency.choices, default=Currency.IRT)
 
     transaction_id = models.CharField(max_length=255, unique=True, null=True, blank=True, db_index=True)
-    reference_id = models.CharField(max_length=255, null=True, blank=True)
+    reference_id = models.CharField(max_length=255, null=True, blank=True, db_index=True)
 
     status = models.CharField(max_length=30, choices=Status.choices, default=Status.INITIATED, db_index=True)
 
