@@ -54,11 +54,6 @@ class Payment(models.Model):
     status = models.CharField(max_length=30, choices=Status.choices, default=Status.CREATED, db_index=True)
 
     description = models.TextField(blank=True)
-    failure_reason = models.TextField(blank=True)
-    metadata = models.JSONField(
-        default=dict,
-        blank=True,
-    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
