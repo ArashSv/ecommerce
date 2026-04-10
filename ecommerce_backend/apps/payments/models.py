@@ -81,11 +81,13 @@ class Payment(models.Model):
             raise ValueError("Invalid transition")
         self.status = self.Status.PROCESSING
 
-    def mark_success(self, reference_id):
+    def mark_success(self, reference_id=None):
         if self.status not in [self.Status.CREATED, self.Status.PROCESSING]:
             raise ValueError("Invalid transition")
         self.status = self.Status.SUCCESS
-        self.reference_id = reference_id
+
+        if not self.reference_id and reference_id:
+            self.reference_id = reference_id
 
     def mark_failed(self):
         if self.status == self.Status.SUCCESS:
