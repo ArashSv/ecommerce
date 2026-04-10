@@ -29,23 +29,10 @@ class Payment(models.Model):
 
 
     class Status(models.TextChoices):
-        # 1. Initial state: Record created in DB, generic info set
-        INITIATED = 'INITIATED', _('Initiated')
-        # 2. User has been sent to the banking gateway
-        IN_PROGRESS = 'IN_PROGRESS', _('In Progress')
-        # 3. Bank callback received, money is blocked but not yet Verified/Captured by us
-        # This is CRITICAL for handling "lost" transactions (Money deducted but not verified)
-        WAITING_FOR_VERIFY = 'WAITING_FOR_VERIFY', _('Waiting for Verification')
-        # 4. Final Success State
-        COMPLETED = 'COMPLETED', _('Completed')
-        # 5. User clicked cancel or closed the bank page
-        CANCELED = 'CANCELED', _('Canceled')
-        # 6. Technical error, bank rejection, or verification failed
+        CREATED = 'CREATED', _('Created')
+        PROCESSING = 'PROCESSING', _('Processing')
+        SUCCESS = 'SUCCESS', _('Success')
         FAILED = 'FAILED', _('Failed')
-        # 7. Money fully returned to user
-        FULLY_REFUNDED = 'FULLY_REFUNDED', _('Fully Refunded')
-        # 8. Part of the money returned (e.g. 1 item out of 3 was returned)
-        PARTIALLY_REFUNDED = 'PARTIALLY_REFUNDED', _('Partially Refunded')
 
 
     class Currency(models.TextChoices):
@@ -87,7 +74,28 @@ class Payment(models.Model):
 
     @property
     def is_paid(self):
-        return self.status in [self.Status.COMPLETED, self.Status.PARTIALLY_REFUNDED, self.Status.FULLY_REFUNDED]
+        return self.status in [self.Status.SUCCESS]
+
+    def mark_created(self):
+        if self.status in [self.Status.PROCESSING, self.Status.SUCCESS, self.Status.FAILED]:
+            raise ValueError("Invalid transition")
+        self.status = self.Status.CREATED
+
+    def mark_processing(self):
+        if self.status != self.Status.CREATED:
+            raise ValueError("Invalid transition")
+        self.status = self.Status.PROCESSING
+
+    def mark_success(self, reference_id):
+        if self.status not in [self.Status.CREATED, self.Status.PROCESSING]:
+            raise ValueError("Invalid transition")
+        self.status = self.Status.SUCCESS
+        self.reference_id = reference_id
+
+    def mark_failed(self):
+        if self.status == self.Status.SUCCESS:
+            raise ValueError("Invalid transition")
+        self.status = self.Status.FAILED
 
 
 class Refund(models.Model):
