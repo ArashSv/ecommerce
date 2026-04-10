@@ -64,7 +64,7 @@ class Payment(models.Model):
     transaction_id = models.CharField(max_length=255, unique=True, null=True, blank=True, db_index=True)
     reference_id = models.CharField(max_length=255, null=True, blank=True, db_index=True)
 
-    status = models.CharField(max_length=30, choices=Status.choices, default=Status.INITIATED, db_index=True)
+    status = models.CharField(max_length=30, choices=Status.choices, default=Status.CREATED, db_index=True)
 
     description = models.TextField(blank=True)
     failure_reason = models.TextField(blank=True)
