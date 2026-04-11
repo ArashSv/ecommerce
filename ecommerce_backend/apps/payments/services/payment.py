@@ -70,7 +70,11 @@ class PaymentService:
         is_success = callback_request.get('is_success')
 
         if not transaction_id or not is_success:
-            return None
+            response = {
+                "is_success": False,
+                "message": _("Transaction failed"),
+            }
+            return Response(response, status=status.HTTP_404_NOT_FOUND)
 
         with transaction.atomic():
             payment = Payment.objects.select_for_update().get(
