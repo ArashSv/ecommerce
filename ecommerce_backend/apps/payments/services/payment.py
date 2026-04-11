@@ -105,7 +105,7 @@ class PaymentService:
                 "is_success": False,
                 "message": _("Transaction not found"),
             }
-            return response
+            return Response(response, status=status.HTTP_404_NOT_FOUND)
 
         verify_result = self.gateway.verify(transaction_id, amount)
         is_success = verify_result.get('is_success')
