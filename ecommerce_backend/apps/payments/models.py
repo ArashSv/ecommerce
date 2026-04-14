@@ -132,7 +132,7 @@ class Refund(models.Model):
 
 
 class PaymentLog(models.Model):
-    payment = models.ForeignKey(Payment, on_delete=models.PROTECT, related_name='logs')
+    payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, related_name='logs', blank=True, null=True)
     url = models.URLField(max_length=500, blank=True, null=True)
     method = models.CharField(max_length=10, default='POST')
 
