@@ -25,7 +25,7 @@ class PaymentService:
         module = __import__(module_name, fromlist=[cls_name])
         return getattr(module, cls_name)
 
-    def create(self, order_id, amount, user=None, **kwargs):
+    def create(self, request, order_id, amount, user=None, **kwargs):
         self._setup()
         create_result = self.gateway.create(amount)
         transaction_id = create_result.get('transaction_id')
