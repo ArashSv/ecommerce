@@ -34,7 +34,6 @@ class AqaepardakhtGateway(BaseGateway):
         try:
             response = requests.post(self.get_create_url(), data=data)
             result = response.json()
-            logger.error(result)
 
             if response.status_code == 200 and result.get("status") == "success":
                 trans_id = result.get("transid")
@@ -43,14 +42,16 @@ class AqaepardakhtGateway(BaseGateway):
                     "url": self.get_startpay_url(trans_id),
                     "transaction_id": trans_id,
                     "message": "Success",
-                    "raw_data": result
+                    "raw_data": result,
+                    "response": response
                 }
 
             return {
                 "is_success": False,
                 "message": result.get("message", "Error from gateway"),
                 "error_code": result.get("code"),
-                "raw_data": result
+                "raw_data": result,
+                "response": response
             }
 
         except Exception as e:
@@ -85,13 +86,15 @@ class AqaepardakhtGateway(BaseGateway):
                 return {
                     "is_success": True,
                     "transaction_id": result.get('transaction_id'),
-                    "raw_data": result
+                    "raw_data": result,
+                    "response":response
                 }
 
             return {
                 "is_success": False,
                 "message": result.get("message", "Verification failed"),
-                "raw_data": result
+                "raw_data": result,
+                "response": response
             }
 
         except Exception as e:

@@ -1,7 +1,7 @@
 from django.db import transaction
 from rest_framework import status
 from rest_framework.response import Response
-from apps.payments.models import PaymentGateway, Payment
+from apps.payments.models import PaymentGateway, Payment, PaymentLog
 from django.utils.translation import gettext as _
 
 
@@ -37,6 +37,15 @@ class PaymentService:
             gateway=self.gw,
             amount=amount,
         )
+
+        response = create_result.get('response')
+        if response:
+            PaymentLog.objects.filter(pk=request.payment_log_id).update(
+                payment=payment,
+                response_status_code=response.status_code,
+                response_body=create_result.get('raw_data'),
+                response_headers=dict(response.headers)
+            )
 
         if is_success and transaction_id:
             payment.mark_created()
@@ -88,10 +97,10 @@ class PaymentService:
                 payment.reference_id = reference_id
                 payment.save(update_fields=['reference_id'])
 
-            result = self.verify(transaction_id=transaction_id, amount=payment.amount)
+            result = self.verify(request=request, transaction_id=transaction_id, amount=payment.amount)
             return result
 
-    def verify(self, transaction_id, amount):
+    def verify(self, request, transaction_id, amount):
         self._setup()
 
         # fast check
@@ -112,6 +121,15 @@ class PaymentService:
             return Response(response, status=status.HTTP_404_NOT_FOUND)
 
         verify_result = self.gateway.verify(transaction_id, amount)
+        response = verify_result.get('response')
+
+        if response:
+            PaymentLog.objects.filter(pk=request.payment_log_id).update(
+                payment=payment,
+                response_status_code=response.status_code,
+                response_body=verify_result.get('raw_data'),
+                response_headers=dict(response.headers)
+            )
         is_success = verify_result.get('is_success')
         reference_id = verify_result.get('reference_id')
 
