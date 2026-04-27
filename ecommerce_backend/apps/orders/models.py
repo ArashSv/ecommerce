@@ -46,6 +46,10 @@ class Order(models.Model):
         address = self.address
         if address and not self.address_snapshot:
             self.address_snapshot = {
+                "full_name": f"{address.first_name} {address.last_name}",
+                "mobile_number": address.mobile_number,
+                "email": address.email,
+
                 "province":address.province,
                 "city":address.city,
                 "postal_address":address.postal_address,
