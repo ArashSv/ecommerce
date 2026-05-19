@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import Carrier, CarrierService, Shipment
+from .models import Shipment, ShippingMethod
 
-admin.site.register(Carrier)
-admin.site.register(CarrierService)
 admin.site.register(Shipment)
+admin.site.register(ShippingMethod)

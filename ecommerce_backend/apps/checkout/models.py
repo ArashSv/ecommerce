@@ -4,7 +4,7 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
-from apps.shipping.models import CarrierService
+from apps.shipping.models import ShippingMethod
 
 
 class Checkout(models.Model):
@@ -12,7 +12,7 @@ class Checkout(models.Model):
     session_id = models.CharField(max_length=128, null=True, blank=True)  # guest session for anonymous users
     cart_snapshot = models.JSONField()  #[{stockrecord_id, qty, unit_price}]
     address_snapshot = models.JSONField(null=True, blank=True)
-    shipping_method = models.ForeignKey(CarrierService, null=True, blank=True, on_delete=models.SET_NULL)
+    shipping_method = models.ForeignKey(ShippingMethod, null=True, blank=True, on_delete=models.SET_NULL)
     payment_intent_id = models.CharField(max_length=256, null=True, blank=True)
     amount = models.BigIntegerField()
     expires_at = models.DateTimeField()

@@ -3,28 +3,20 @@ from django.utils.translation import gettext_lazy as _
 from apps.orders.models import Order
 
 
-class Carrier(models.Model):
+class ShippingMethod(models.Model):
+    carrier_name = models.CharField(max_length=64)
     name = models.CharField(max_length=64)
     slug = models.SlugField(allow_unicode=True)
-    code = models.CharField(max_length=32, null=True, blank=True)
-    website_url = models.URLField(null=True, blank=True)
-    is_active = models.BooleanField(default=True)
-    metadata = models.JSONField(null=True, blank=True)
-
-    def __str__(self):
-        status = "active" if self.is_active else "not active"
-        return f"{self.name} - status : {status}"
-
-
-class CarrierService(models.Model):
-    carrier = models.ForeignKey(Carrier, on_delete=models.CASCADE, related_name="services")
-    name = models.CharField(max_length=64)
-    slug = models.SlugField(allow_unicode=True)
-    code = models.CharField(max_length=32, null=True, blank=True) # exam: standard, eco, express, ..
     delivery_min = models.DurationField(default=1)
     delivery_max = models.DurationField(default=4)
     base_price = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
+    config = models.JSONField(null=True, blank=True)
+    website_url = models.URLField(null=True, blank=True)
+
+    def __str__(self):
+        status = "active" if self.is_active else "not active"
+        return f"{self.slug} - status : {status}"
 
 
 class ShipmentStatus(models.TextChoices):
@@ -38,7 +30,7 @@ class ShipmentStatus(models.TextChoices):
 
 class Shipment(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="shipments")
-    service = models.ForeignKey(CarrierService, on_delete=models.CASCADE, related_name="shipments")
+    service = models.ForeignKey(ShippingMethod, on_delete=models.CASCADE, related_name="shipments")
 
     # Physical result data
     total_weight = models.PositiveIntegerField(help_text=_("Total actual weight in grams"))
