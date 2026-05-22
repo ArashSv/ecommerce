@@ -60,7 +60,7 @@ class Order(models.Model):
                 "latitude": address.latitude if address.latitude else None,
                 "longitude": address.longitude if address.longitude else None,
             }
-        self.update_totals()
+
         super().save(*args, **kwargs)
 
     def __str__(self):
