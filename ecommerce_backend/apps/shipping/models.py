@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from apps.orders.models import Order
 
@@ -51,7 +52,6 @@ class Shipment(models.Model):
     shipped_at = models.DateTimeField(null=True, blank=True)
     delivered_at = models.DateTimeField(null=True, blank=True)
 
-
     class Meta:
         indexes = [
             models.Index(fields=['order', 'status']),
@@ -60,6 +60,33 @@ class Shipment(models.Model):
 
     def __str__(self):
         return f"Shipment #{self.id} for Order #{self.order_id} ({self.status})"
+
+    def mark_picked(self):
+        if self.status != ShipmentStatus.PENDING:
+            raise ValueError(_("Only pending shipments can be picked."))
+        self.status = ShipmentStatus.PICKED
+
+    def mark_in_transit(self):
+        if self.status not in [ShipmentStatus.PENDING, ShipmentStatus.PICKED]:
+            raise ValueError(_("Only pending or picked shipments can be set as in transit."))
+        self.status = ShipmentStatus.IN_TRANSIT
+        self.shipped_at = timezone.now()
+
+    def mark_delivered(self):
+        if self.status != ShipmentStatus.IN_TRANSIT:
+            raise ValueError(_("Only in transit shipments can be delivered."))
+        self.status = ShipmentStatus.DELIVERED
+        self.delivered_at = timezone.now()
+
+    def mark_returned(self):
+        if self.status not in [ShipmentStatus.IN_TRANSIT, ShipmentStatus.DELIVERED]:
+            raise ValueError(_("Only in transit or delivered shipments can be returned."))
+        self.status = ShipmentStatus.RETURNED
+
+    def mark_cancelled(self):
+        if self.status not in [ShipmentStatus.PENDING, ShipmentStatus.PICKED]:
+            raise ValueError(_("Only pending or picked shipments can be cancelled."))
+        self.status = ShipmentStatus.CANCELLED
 
 
 class TrackingEvent(models.Model):
